@@ -43,6 +43,7 @@ def send_message(data):
     else:
         print('User not found in session')
     if uid:
+        
         message = data['msg']
         nowdate = datetime.now()
         aimessage=data['ai']

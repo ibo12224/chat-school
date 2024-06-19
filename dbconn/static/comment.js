@@ -1,17 +1,16 @@
 let comments = [];
-var socket = io.connect('/question');
+var socket = io.connect('/comment');
 const urlParams = new URLSearchParams(window.location.search);
 const 게시물_ID = urlParams.get('게시물_ID');
 socket.on('question', function(data) {
   questionpage(data)
-}
-);
+});
 
 socket.on('comment_num', function(data) {
   console.log(data)
   const text4 = document.getElementById('text4');
-  const { 게시물_ID, comment_count } = data;
-  text4.value = comment_count;
+  text4.value = data;
+  
 });
 
 socket.on('comment',function(data){
@@ -34,6 +33,10 @@ document.getElementById('postCommentButton').addEventListener('click', function 
     }
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    socket.emit('question',게시물_ID);
+    socket.emit('comment_num',게시물_ID);
+});
 function displayComments() {
     const commentsContainer = document.getElementById('commentsContainer');
 
@@ -74,10 +77,7 @@ function deleteComment(index) {
     comments.splice(index, 1);
     displayComments();
 }
-document.addEventListener('DOMContentLoaded', function() {
-  socket.emit('question',게시물_ID);
-  socket.emit('comment_num',게시물_ID);
-});
+
 
 function questionpage(data){
   const questionData = JSON.parse(data)[0];

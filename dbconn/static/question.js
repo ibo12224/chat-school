@@ -10,15 +10,10 @@ socket.on('success', function() {
     console.log('Success!');
 });
 
-socket.on('connect', function() {
-    // Emit a 'question_start' event to initiate communication
-    socket.emit('question_start');});
-
 // Handle error event
 socket.on('error', function(data) {
     console.log(data)
 });
-
 
 // Handle 'board' event to display board data
 socket.on('board', function(data) {
