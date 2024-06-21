@@ -3,6 +3,7 @@ from .supabase_client import supabase
 bp = Blueprint('student_main', __name__, url_prefix='/student')
 from .. import conn, socketio 
 from flask_socketio import emit
+import json
 
 
 """
@@ -208,31 +209,37 @@ def qes_com_get(data):
     bd_id = int(data)
     try:
         comment_count = conn.tb_len("Comment", "게시물_ID", bd_id)
-        print(comment_count)
         emit('comment_num', {'게시물_ID': bd_id, 'comment_count': comment_count})
     except Exception as e:
         emit('error', {'message': str(e)})
 
 @socketio.on('question', namespace='/comment')
-def qes_com_get(data):
+def qes_get(data):
     bd_id=int(data)
     emit('question',conn.tb_select("Board","게시물_ID",bd_id))
 
 @socketio.on('comment', namespace='/comment')
-def qes_com_get(data):
+def com_get(data):
     bd_id=int(data)
-    emit('comment',conn.tb_select("Comment","게시물_ID",bd_id))
+    print(conn.ct_select(bd_id))
+    emit('comment',conn.ct_select(bd_id))
     
 @socketio.on('comment_num', namespace='/comment')
-def qes_com_get(data):
+def com_num_get(data):
     bd_id = int(data)
     try:
         comment_count = conn.tb_len("Comment", "게시물_ID", bd_id)
-        print(comment_count)
         emit('comment_num', comment_count)
     except Exception as e:
         emit('error', {'message': str(e)})
-
+@socketio.on('edit_comment',namespace='/comment')
+def comment_edit(data):
+    try:
+        
+        conn.tb_ninsert("Comment",[1,data['ID']])
+        emit('success')
+    except Exception as e:
+        emit('error', {'message': str(e)})
     
 
 # 질문게시판 가져오기

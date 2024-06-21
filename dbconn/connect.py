@@ -284,6 +284,43 @@ class Connector:
             except Exception as e:
                 self.session.rollback()
                 raise e 
+    def ct_select(self,question):
+        session = self.session
+        query = session.query(
+            Comment,
+            Teacher.선생이름,
+            Student.학생이름
+        ).join(
+            Teacher, Comment.선생_ID == Teacher.선생_ID, isouter=True
+        ).join(
+            Student, Comment.학생_ID == Student.학생_ID, isouter=True
+        ).filter(Comment.게시물_ID==question)
+
+        # Execute the query and fetch results
+        results = query.all()
+
+        # Convert results to JSON format
+        json_results = []
+        for comment, teacher_name, student_name in results:
+            comment_dict = {
+                '댓글_ID': comment.댓글_ID,
+                '게시물_ID': comment.게시물_ID,
+                '선생_ID': str(comment.선생_ID),
+                '학생_ID': str(comment.학생_ID),
+                '내용': comment.내용,
+                '댓글시간': comment.댓글시간.isoformat() if comment.댓글시간 else None,
+                '선생이름': teacher_name,
+                '학생이름': student_name
+            }
+            json_results.append(comment_dict)
+
+        # Return JSON formatted string
+        json_output = json.dumps(json_results, ensure_ascii=False, indent=4, default=str)
+        return json_output
+        
+
+
+
     def convert_to_list(self,objects):
         data_list = []
         for obj in objects:

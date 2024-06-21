@@ -15,6 +15,8 @@ document.getElementById('postCommentButton').addEventListener('click', function 
         comments.push(newComment);
         document.getElementById('textAreaExample').value = '';
         displayComments();
+        socket.emit('edit_comment', {'ID':게시물_ID,'comment':commentText});
+        socket.emit('comment_num',게시물_ID);
     }
 });
 
@@ -31,15 +33,26 @@ socket.on('comment_num', function(data) {
 
 socket.on('comment', function(data) {
 // 서버에서 보낸 데이터를 comments 배열에 추가
+    console.log(data);
     jsond=JSON.parse(data);
-    console.log(jsond);
     jsond.forEach(comment => {
+        var n="";
+        if (comment.선생이름){
+            n=comment.선생이름;
+        }
+        else {
+            n=comment.학생이름;
+        };
+        console.log("test");
+        console.log(n);
         comments.push({
-        name: comment.name,
-        text: comment.text,
-        date: comment.date
+        id:comment.댓글_ID,
+        name: n,
+        text: comment.내용,
+        date: comment.댓글시간
         });
     });
+    
     // 댓글을 화면에 표시
     displayComments();
 });
@@ -48,7 +61,7 @@ socket.on('comment', function(data) {
 document.addEventListener('DOMContentLoaded', function() {
     socket.emit('question',게시물_ID);
     socket.emit('comment_num',게시물_ID);
-    socket.emit('comment',게시물_ID)
+    socket.emit('comment',게시물_ID);
 });
 
 function displayComments() {
@@ -56,7 +69,7 @@ function displayComments() {
 
     commentsContainer.innerHTML = comments.map((comment, index) => `
     <div class="card mb-3">
-        <div class="card-body">
+        <div class="card-body" id="comment-${comment.id}">
             <div class="d-flex flex-start">
                 <img class="rounded-circle shadow-1-strong me-3"
                     src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
@@ -90,6 +103,8 @@ function editComment(index) {
 function deleteComment(index) {
     comments.splice(index, 1);
     displayComments();
+    socket.emit('delete_comment',댓글_ID)
+    socket.emit('comment_num',게시물_ID);
 }
 
 
