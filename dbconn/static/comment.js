@@ -68,8 +68,8 @@ function displayComments() {
     const commentsContainer = document.getElementById('commentsContainer');
 
     commentsContainer.innerHTML = comments.map((comment, index) => `
-    <div class="card mb-3">
-        <div class="card-body" id="comment-${comment.id}">
+    <div class="card mb-3" id ="comment-${comment.id}">
+        <div class="card-body" id="comment">
             <div class="d-flex flex-start">
                 <img class="rounded-circle shadow-1-strong me-3"
                     src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
